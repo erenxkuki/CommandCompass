@@ -19,7 +19,7 @@ def test_version():
     exe = shutil.which("commandcompass")
     res = subprocess.run([exe, "version"], check=False, capture_output=True, text=True)
     assert res.returncode == 0
-    assert "0.1.0" in res.stdout
+    assert "0.1.1" in res.stdout
 
 
 def test_analyze_json():

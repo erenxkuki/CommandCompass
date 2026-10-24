@@ -1,14 +1,53 @@
 from __future__ import annotations
 
+import os
+import re
 import sys
+import urllib.request
 from pathlib import Path
 
 import typer
 
+from commandcompass import __version__
 from commandcompass.core.analysis import analyze as run_analysis
 from commandcompass.core.models import AnalysisRequest, ShellType
 from commandcompass.reporting import to_json, to_markdown_report
 from commandcompass.rules import default_rules, rule_by_id
+
+REPO_URL = "https://github.com/erenxkuki/CommandCompass"
+RAW_VERSION_URL = (
+    REPO_URL.replace("github.com", "raw.githubusercontent.com") + "/main/commandcompass/__init__.py"
+)
+CHANGELOG_URL = REPO_URL + "/blob/main/CHANGELOG.md"
+UPDATE_COMMAND = 'pip install --upgrade "git+https://github.com/erenxkuki/CommandCompass.git"'
+
+
+def _blue_link(text: str, url: str) -> str:
+    return f"\x1b[34m\x1b]8;;{url}\x1b\\{text}\x1b]8;;\x1b\\\x1b[0m"
+
+
+def _latest_remote_version(force: bool = False) -> str | None:
+    if os.environ.get("COMMANDCOMPASS_NO_UPDATE_CHECK"):
+        return None
+    if not force and not sys.stdout.isatty():
+        return None
+    try:
+        with urllib.request.urlopen(RAW_VERSION_URL, timeout=2) as response:
+            text = response.read().decode("utf-8", errors="replace")
+        match = re.search(r'__version__\s*=\s*"([^"]+)"', text)
+        return match.group(1) if match else None
+    except Exception:
+        return None
+
+
+def _notify_update(force: bool = False) -> None:
+    latest = _latest_remote_version(force=force)
+    if latest and latest != __version__:
+        typer.echo(f"Update available: {__version__} -> {latest}")
+        typer.echo("Update: " + _blue_link(UPDATE_COMMAND, REPO_URL))
+        typer.echo("Changelog: " + _blue_link(CHANGELOG_URL, CHANGELOG_URL))
+        typer.echo("License: " + _blue_link("MIT", REPO_URL + "/blob/main/LICENSE"))
+
 
 app = typer.Typer(help="CommandCompass: inspect commands without executing them.")
 rules_app = typer.Typer(help="Inspect analysis rules.")
@@ -38,10 +77,13 @@ def analyze(
     shell: str = typer.Option("auto", "--shell", help="Shell: auto, posix, powershell, cmd."),
     file: Path | None = typer.Option(None, "--file", help="Read command from file."),
     stdin: bool = typer.Option(False, "--stdin", help="Read command from stdin."),
+    no_update_check: bool = typer.Option(False, "--no-update-check", help="Disable update check."),
     format: str = typer.Option("text", "--format", help="Output format: text, json, markdown."),
     output: Path | None = typer.Option(None, "--output", help="Write report to file."),
 ):
     """Analyze a command without executing it."""
+    if not no_update_check:
+        _notify_update()
     if file is not None:
         try:
             command = file.read_text(encoding="utf-8").strip()
@@ -187,7 +229,15 @@ def examples():
 
 @app.command()
 def version():
-    typer.echo("commandcompass 0.1.0")
+    typer.echo("commandcompass " + __version__)
+    typer.echo("License: " + _blue_link("MIT", REPO_URL + "/blob/main/LICENSE"))
+    _notify_update(force=True)
+
+
+@app.command()
+def update():
+    """Check for updates."""
+    _notify_update(force=True)
 
 
 @app.command()
