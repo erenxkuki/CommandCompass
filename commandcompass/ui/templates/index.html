@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CommandCompass</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --border: #2a2f3a;
+    --text: #e6e9ef;
+    --muted: #9aa4b2;
+    --accent: #7aa2f7;
+    --warn: #e0af68;
+    --high: #f7768e;
+    --crit: #ff5370;
+    --ok: #9ece6a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5;
+  }
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px; border-bottom: 1px solid var(--border);
+    background: var(--panel);
+  }
+  header h1 { margin: 0; font-size: 18px; letter-spacing: 0.5px; }
+  header .nav { color: var(--muted); font-size: 13px; }
+  main { max-width: 1100px; margin: 0 auto; padding: 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px;
+  }
+  .card h2 { margin: 0 0 12px; font-size: 15px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  textarea {
+    width: 100%; min-height: 120px; background: #0b0d11; color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px; padding: 12px;
+    font-family: "Cascadia Code", Consolas, monospace; font-size: 14px; resize: vertical;
+  }
+  select, button {
+    background: #1f2330; color: var(--text); border: 1px solid var(--border);
+    border-radius: 6px; padding: 8px 12px; font-size: 14px; cursor: pointer;
+  }
+  button.primary { background: var(--accent); color: #0b0d11; border-color: var(--accent); font-weight: 600; }
+  button:hover { opacity: 0.9; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; align-items: center; }
+  .privacy { color: var(--muted); font-size: 12px; margin-top: 8px; }
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px;
+    border: 1px solid var(--border); color: var(--muted);
+  }
+  .assessment { font-size: 20px; font-weight: 700; }
+  .assessment.informational { color: var(--ok); }
+  .assessment.caution { color: var(--warn); }
+  .assessment.high_risk { color: var(--high); }
+  .assessment.critical_risk { color: var(--crit); }
+  .assessment.unknown { color: var(--muted); }
+  .finding {
+    border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-bottom: 8px;
+    background: #12151c;
+  }
+  .finding .fid { font-family: monospace; font-size: 12px; color: var(--muted); }
+  .finding .title { font-weight: 600; margin: 4px 0; }
+  .finding .sev { font-size: 11px; text-transform: uppercase; }
+  .finding .sev.critical { color: var(--crit); }
+  .finding .sev.high { color: var(--high); }
+  .finding .sev.caution { color: var(--warn); }
+  .finding .sev.informational { color: var(--ok); }
+  .details { display: none; margin-top: 8px; font-size: 13px; color: var(--muted); }
+  .finding.open .details { display: block; }
+  .list { margin: 4px 0; padding-left: 18px; }
+  .examples button { font-size: 12px; padding: 4px 8px; }
+  .kbd { font-family: monospace; background: #0b0d11; padding: 1px 5px; border-radius: 3px; border: 1px solid var(--border); font-size: 11px; }
+  footer { color: var(--muted); font-size: 12px; padding: 24px; text-align: center; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+  .tab { cursor: pointer; padding: 6px 10px; border-radius: 4px; background: #1f2330; }
+  .tab.active { background: var(--accent); color: #0b0d11; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+</style>
+</head>
+<body>
+<header>
+  <h1>CommandCompass</h1>
+  <div class="nav">Local-only &middot; No execution &middot; v0.1.0</div>
+</header>
+<main>
+  <div class="tabs">
+    <div class="tab active" data-tab="analyze">Analyze</div>
+    <div class="tab" data-tab="rules">Rules</div>
+    <div class="tab" data-tab="examples">Examples</div>
+    <div class="tab" data-tab="settings">Settings</div>
+    <div class="tab" data-tab="about">About</div>
+  </div>
+
+  <section id="panel-analyze" class="panel active">
+    <div class="grid">
+      <div class="card">
+        <h2>Command input</h2>
+        <textarea id="cmd" placeholder="Paste a command to inspect..."></textarea>
+        <div class="row">
+          <select id="shell">
+            <option value="auto">Auto-detect shell</option>
+            <option value="posix">POSIX (bash/sh)</option>
+            <option value="powershell">PowerShell</option>
+            <option value="cmd">Windows CMD</option>
+          </select>
+          <button class="primary" id="analyzeBtn">Analyze</button>
+          <button id="clearBtn">Clear</button>
+        </div>
+        <div class="privacy">Input is analyzed locally in your browser session's server. It is not executed. No telemetry.</div>
+        <div class="row examples" id="exampleRow"></div>
+      </div>
+      <div class="card">
+        <h2>Result</h2>
+        <div id="resultEmpty" style="color:var(--muted)">No analysis yet.</div>
+        <div id="result" style="display:none"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="panel-rules" class="panel">
+    <div class="card">
+      <h2>Rule explorer</h2>
+      <input id="ruleSearch" placeholder="Search rules..." style="width:100%;padding:8px;background:#0b0d11;color:var(--text);border:1px solid var(--border);border-radius:6px;">
+      <div id="rulesList" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <section id="panel-examples" class="panel">
+    <div class="card">
+      <h2>Example library</h2>
+      <div id="examplesList"></div>
+    </div>
+  </section>
+
+  <section id="panel-settings" class="panel">
+    <div class="card">
+      <h2>Settings</h2>
+      <p style="color:var(--muted)">CommandCompass runs locally. No accounts, no telemetry, no cloud. Exported reports may contain redacted secrets; review before sharing.</p>
+    </div>
+  </section>
+
+  <section id="panel-about" class="panel">
+    <div class="card">
+      <h2>About</h2>
+      <p>CommandCompass is a decision-support and educational tool, not a substitute for security review.</p>
+      <p>Supported shells: POSIX (incremental), PowerShell (incremental), Windows CMD (incremental).</p>
+      <p>License: MIT.</p>
+    </div>
+  </section>
+</main>
+<footer>Explain first. Show evidence. Communicate uncertainty. Never execute automatically.</footer>
+
+<script>
+const $ = (id) => document.getElementById(id);
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('panel-'+t.dataset.tab).classList.add('active');
+  });
+});
+
+async function loadExamples(){
+  const res = await fetch('/api/examples');
+  const data = await res.json();
+  const row = $('exampleRow');
+  data.examples.forEach(ex=>{
+    const b = document.createElement('button');
+    b.textContent = ex;
+    b.addEventListener('click', ()=>{ $('cmd').value = ex; });
+    row.appendChild(b);
+  });
+  const list = $('examplesList');
+  data.examples.forEach(ex=>{
+    const d = document.createElement('div');
+    d.className = 'finding';
+    d.innerHTML = `<div class="title">${esc(ex)}</div>`;
+    const btn = document.createElement('button');
+    btn.textContent = 'Analyze';
+    btn.style.marginTop='6px';
+    btn.addEventListener('click', ()=>{ $('cmd').value=ex; document.querySelector('[data-tab="analyze"]').click(); analyze(); });
+    d.appendChild(btn);
+    list.appendChild(d);
+  });
+}
+
+async function loadRules(){
+  const res = await fetch('/api/rules');
+  const data = await res.json();
+  window._rules = data.rules;
+  renderRules('');
+}
+function renderRules(q){
+  const list = $('rulesList');
+  list.innerHTML = '';
+  (window._rules||[]).filter(r=>{
+    if(!q) return true;
+    const low=q.toLowerCase();
+    return r.id.toLowerCase().includes(low) || r.title.toLowerCase().includes(low) || r.category.toLowerCase().includes(low);
+  }).forEach(r=>{
+    const d=document.createElement('div');
+    d.className='finding';
+    d.innerHTML = `<div class="fid">${esc(r.id)} &middot; ${esc(r.category)} &middot; ${esc(r.severity)}</div><div class="title">${esc(r.title)}</div><div style="font-size:13px;color:var(--muted)">${esc(r.description)}</div>`;
+    list.appendChild(d);
+  });
+}
+$('ruleSearch').addEventListener('input', e=>renderRules(e.target.value));
+
+async function analyze(){
+  const command = $('cmd').value;
+  if(!command.trim()) return;
+  $('analyzeBtn').disabled = true;
+  try {
+    const res = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({command, shell: $('shell').value})
+    });
+    const data = await res.json();
+    if(data.error){ alert(data.error); return; }
+    renderResult(data.result, data.markdown);
+  } catch(e){ alert('Request failed'); }
+  finally { $('analyzeBtn').disabled = false; }
+}
+$('analyzeBtn').addEventListener('click', analyze);
+$('clearBtn').addEventListener('click', ()=>{ $('cmd').value=''; });
+
+function renderResult(r, md){
+  $('resultEmpty').style.display='none';
+  const el = $('result');
+  el.style.display='block';
+  el.innerHTML = '';
+  const h = document.createElement('div');
+  h.innerHTML = `<div class="assessment ${esc(r.assessment)}">${esc(r.assessment)}</div>
+    <div style="color:var(--muted);font-size:13px">Completeness: ${esc(r.completeness)}</div>
+    <p>${esc(r.summary)}</p>`;
+  el.appendChild(h);
+
+  const struct = document.createElement('div');
+  struct.innerHTML = '<h3 style="font-size:14px;color:var(--muted)">Command structure</h3>';
+  const ul = document.createElement('ul'); ul.className='list';
+  (r.commands||[]).forEach(c=>{
+    const li = document.createElement('li');
+    li.textContent = `${c.name} ${ (c.args||[]).join(' ') } ${(c.redirections||[]).join(' ')}`.trim();
+    ul.appendChild(li);
+  });
+  struct.appendChild(ul);
+  el.appendChild(struct);
+
+  const findingsTitle = document.createElement('h3');
+  findingsTitle.textContent = 'Findings';
+  findingsTitle.style.cssText='font-size:14px;color:var(--muted);margin-top:12px';
+  el.appendChild(findingsTitle);
+  (r.findings||[]).forEach(f=>{
+    const d = document.createElement('div');
+    d.className='finding';
+    d.innerHTML = `<div class="fid">${esc(f.id)}</div>
+      <div class="title">${esc(f.title)}</div>
+      <div class="sev ${esc(f.severity)}">${esc(f.severity)}</div>
+      <div style="font-size:13px;margin-top:4px">${esc(f.explanation)}</div>
+      <div class="details">
+        <div><strong>Evidence:</strong> ${esc((f.evidence||[]).join(' | '))}</div>
+        <div><strong>Impact:</strong> ${esc(f.impact)}</div>
+        <div><strong>Mitigation:</strong> ${esc(f.mitigation)}</div>
+        <div><strong>Caveats:</strong> ${esc((f.caveats||[]).join(' '))}</div>
+      </div>`;
+    d.addEventListener('click', ()=>d.classList.toggle('open'));
+    el.appendChild(d);
+  });
+  if(!(r.findings||[]).length){
+    const p=document.createElement('p'); p.style.color='var(--muted)'; p.textContent='No specific findings.'; el.appendChild(p);
+  }
+
+  const se = document.createElement('div');
+  se.innerHTML = '<h3 style="font-size:14px;color:var(--muted);margin-top:12px">Side effects</h3>';
+  const sul=document.createElement('ul'); sul.className='list';
+  (r.side_effects||[]).forEach(s=>{const li=document.createElement('li');li.textContent=s;sul.appendChild(li);});
+  se.appendChild(sul); el.appendChild(se);
+
+  const alt = document.createElement('div');
+  alt.innerHTML = '<h3 style="font-size:14px;color:var(--muted);margin-top:12px">Safer alternatives</h3>';
+  const aul=document.createElement('ul'); aul.className='list';
+  (r.safer_alternatives||[]).forEach(s=>{const li=document.createElement('li');li.textContent=s;aul.appendChild(li);});
+  alt.appendChild(aul); el.appendChild(alt);
+
+  const lim = document.createElement('div');
+  lim.innerHTML = '<h3 style="font-size:14px;color:var(--muted);margin-top:12px">Limitations</h3>';
+  const lul=document.createElement('ul'); lul.className='list';
+  (r.limitations||[]).forEach(l=>{const li=document.createElement('li');li.textContent=l.description;lul.appendChild(li);});
+  lim.appendChild(lul); el.appendChild(lim);
+
+  const mc = document.createElement('div');
+  mc.innerHTML = '<h3 style="font-size:14px;color:var(--muted);margin-top:12px">Missing context</h3>';
+  const mul=document.createElement('ul'); mul.className='list';
+  (r.missing_context||[]).forEach(m=>{const li=document.createElement('li');li.textContent=m;mul.appendChild(li);});
+  mc.appendChild(mul); el.appendChild(mc);
+
+  const qs = document.createElement('div');
+  qs.innerHTML = '<h3 style="font-size:14px;color:var(--muted);margin-top:12px">Suggested questions</h3>';
+  const qul=document.createElement('ul'); qul.className='list';
+  (r.suggested_questions||[]).forEach(q=>{const li=document.createElement('li');li.textContent=q;qul.appendChild(li);});
+  qs.appendChild(qul); el.appendChild(qs);
+
+  const actions = document.createElement('div');
+  actions.className='row';
+  const copyBtn = document.createElement('button');
+  copyBtn.textContent = 'Copy analysis';
+  copyBtn.addEventListener('click', ()=>{ navigator.clipboard.writeText(JSON.stringify(r,null,2)); });
+  const exportBtn = document.createElement('button');
+  exportBtn.textContent = 'Export Markdown';
+  exportBtn.addEventListener('click', ()=>{ const blob=new Blob([md],{type:'text/markdown'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='commandcompass-report.md'; a.click(); URL.revokeObjectURL(url); });
+  actions.appendChild(copyBtn); actions.appendChild(exportBtn);
+  el.appendChild(actions);
+}
+
+loadExamples();
+loadRules();
+</script>
+</body>
+</html>
