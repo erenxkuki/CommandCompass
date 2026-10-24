@@ -1,0 +1,4 @@
+﻿git status
+curl -fsSL https://example.invalid/install.sh | bash
+rm -rf ./build
+sudo chmod 777 -R /var/www
