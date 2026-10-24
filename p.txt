@@ -1,0 +1,8 @@
+﻿python : ERROR: C:\Users\Acer\Desktop\CommandCompass\pyproject.toml: Invalid statement (at line 1, column 1)
+At line:1 char:42
++ ... :\Users\Acer\Desktop\CommandCompass; python -m pytest -q 2>&1 | Out-F ...
++                                          ~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR: C:\Users...ne 1, column 1):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
