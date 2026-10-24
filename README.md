@@ -1,13 +1,28 @@
-# CommandCompass
+<p align="center">
+  <img src="https://img.shields.io/badge/CommandCompass-Local--First%20Command%20Inspection-1f2330?style=for-the-badge" alt="CommandCompass" />
+</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
-[![Tests](https://img.shields.io/badge/tests-54%20passing-brightgreen.svg)](#development)
-[![GitHub stars](https://img.shields.io/github/stars/erenxkuki/CommandCompass?style=social)](https://github.com/erenxkuki/CommandCompass)
+<h1 align="center">CommandCompass</h1>
 
-CommandCompass is a local-first command inspection tool. It helps you understand terminal commands before executing them. It never executes analyzed commands.
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" /></a>
+  <a href="pyproject.toml"><img src="https://img.shields.io/badge/python-3.11%2B-blue.svg" alt="Python 3.11+" /></a>
+  <a href="#development"><img src="https://img.shields.io/badge/tests-54%20passing-brightgreen.svg" alt="Tests" /></a>
+  <a href="https://github.com/erenxkuki/CommandCompass"><img src="https://img.shields.io/github/stars/erenxkuki/CommandCompass?style=social" alt="GitHub stars" /></a>
+</p>
 
-Developer: **RealRyzu** (GitHub: [@erenxkuki](https://github.com/erenxkuki))
+<p align="center">
+  <strong>Understand terminal commands before you run them.</strong><br />
+  Local-first. Offline. No execution. No accounts. No telemetry.
+</p>
+
+<p align="center">
+  Developer: <strong>RealRyzu</strong> (GitHub: <a href="https://github.com/erenxkuki">@erenxkuki</a>)
+</p>
+
+---
+
+CommandCompass helps you inspect commands copied from tutorials, repositories, docs, forums, package installers, and AI-generated answers. It explains structure, flags risky behavior, shows evidence, and suggests safer alternatives without ever executing the input.
 
 ## Showcase
 
@@ -30,8 +45,8 @@ The web UI provides the same analysis with expandable evidence, safer alternativ
 
 - Offline deterministic analysis (no LLM, no network, no account).
 - POSIX, PowerShell, and Windows CMD parsing (incremental).
-- Security rules for destructive, privileged, remote-execution, secrets, network, persistence, obfuscation, supply-chain.
-- CLI with text/JSON/Markdown output.
+- Security rules for destructive, privileged, remote-execution, secrets, network, persistence, obfuscation, and supply-chain risks.
+- CLI with text, JSON, and Markdown output.
 - Loopback-only web UI.
 - Secret redaction in reports.
 
