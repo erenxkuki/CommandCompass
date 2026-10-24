@@ -56,6 +56,8 @@ The web UI provides the same analysis with expandable evidence, safer alternativ
 
 ## Installation
 
+CommandCompass supports Linux, macOS, and Windows.
+
 From GitHub:
 
 ```bash

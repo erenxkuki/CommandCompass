@@ -67,9 +67,20 @@ def create_app() -> FastAPI:
     async def api_examples():
         return JSONResponse({"examples": EXAMPLES})
 
-    # security headers
+    ALLOWED_HOSTS = {"127.0.0.1", "localhost", "::1", "testserver"}
+
     @app.middleware("http")
-    async def security_headers(request: Request, call_next):
+    async def security_guard(request: Request, call_next):
+        host = request.headers.get("host", "").split(":")[0].strip("[]").lower()
+        if host and host not in ALLOWED_HOSTS:
+            return JSONResponse({"error": "Forbidden host"}, status_code=403)
+        origin = request.headers.get("origin")
+        if origin:
+            from urllib.parse import urlparse
+
+            parsed = urlparse(origin)
+            if parsed.hostname not in ALLOWED_HOSTS:
+                return JSONResponse({"error": "Forbidden origin"}, status_code=403)
         response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
