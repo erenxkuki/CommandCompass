@@ -33,7 +33,8 @@ Repository = "https://github.com/erenxkuki/CommandCompass"
 Issues = "https://github.com/erenxkuki/CommandCompass/issues"
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "ruff>=0.6"]
+dev = ["pytest>=8", "ruff>=0.6", "httpx2>=2.0"]
+
 [project.scripts]
 commandcompass = "commandcompass.cli.main:app"
 

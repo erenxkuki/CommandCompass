@@ -92,3 +92,16 @@ def test_examples_command():
     res = subprocess.run([exe, "examples"], check=False, capture_output=True, text=True)
     assert res.returncode == 0
     assert "git status" in res.stdout
+
+
+def test_analyze_stdin():
+    exe = __import__("shutil").which("commandcompass")
+    res = subprocess.run(
+        [exe, "analyze", "--stdin"],
+        input="git status",
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert res.returncode == 0
+    assert "informational" in res.stdout

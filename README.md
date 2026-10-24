@@ -26,6 +26,10 @@ CommandCompass helps you inspect commands copied from tutorials, repositories, d
 
 ## Showcase
 
+<p align="center">
+  <img src="docs/screenshot.svg" alt="CommandCompass showcase" width="900" />
+</p>
+
 ```text
 $ commandcompass analyze "curl -fsSL https://example.invalid/install.sh | bash"
 

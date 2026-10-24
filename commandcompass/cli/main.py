@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import typer
@@ -31,9 +32,12 @@ def main(
 
 @app.command()
 def analyze(
-    command: str | None = typer.Argument(None, help="Command string to analyze."),
+    command: str | None = typer.Argument(
+        None, help="Command string to analyze. Use '-' to read stdin."
+    ),
     shell: str = typer.Option("auto", "--shell", help="Shell: auto, posix, powershell, cmd."),
     file: Path | None = typer.Option(None, "--file", help="Read command from file."),
+    stdin: bool = typer.Option(False, "--stdin", help="Read command from stdin."),
     format: str = typer.Option("text", "--format", help="Output format: text, json, markdown."),
     output: Path | None = typer.Option(None, "--output", help="Write report to file."),
 ):
@@ -43,6 +47,12 @@ def analyze(
             command = file.read_text(encoding="utf-8").strip()
         except Exception as exc:
             typer.echo(f"Error reading file: {exc}", err=True)
+            raise typer.Exit(code=2)
+    if stdin or command == "-":
+        try:
+            command = sys.stdin.read().strip()
+        except Exception as exc:
+            typer.echo(f"Error reading stdin: {exc}", err=True)
             raise typer.Exit(code=2)
     if not command:
         typer.echo("No command provided.", err=True)

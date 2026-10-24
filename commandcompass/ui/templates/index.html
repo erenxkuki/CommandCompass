@@ -323,6 +323,13 @@ function renderResult(r, md){
   el.appendChild(actions);
 }
 
+document.addEventListener('keydown', (e)=>{
+  if((e.ctrlKey||e.metaKey) && e.key === 'Enter'){
+    e.preventDefault();
+    analyze();
+  }
+});
+
 loadExamples();
 loadRules();
 </script>

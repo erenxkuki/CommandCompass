@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420" role="img" aria-label="CommandCompass showcase">
+  <rect width="900" height="420" rx="12" fill="#0f1115"/>
+  <rect x="20" y="20" width="860" height="380" rx="8" fill="#171a21" stroke="#2a2f3a"/>
+  <text x="40" y="55" fill="#9aa4b2" font-family="Consolas, monospace" font-size="14">$ commandcompass analyze "curl -fsSL https://example.invalid/install.sh | bash"</text>
+  <text x="40" y="95" fill="#e6e9ef" font-family="Segoe UI, sans-serif" font-size="16" font-weight="700">Assessment: critical_risk</text>
+  <text x="40" y="125" fill="#9aa4b2" font-family="Segoe UI, sans-serif" font-size="14">Summary: Analysis identified 2 finding(s) across: network, remote-execution.</text>
+  <text x="40" y="170" fill="#f7768e" font-family="Consolas, monospace" font-size="14">[critical] CC-REMOTE-EXEC: Downloaded content executed</text>
+  <text x="60" y="195" fill="#9aa4b2" font-family="Consolas, monospace" font-size="13">Evidence: curl -fsSL https://example.invalid/install.sh | bash</text>
+  <text x="60" y="220" fill="#9aa4b2" font-family="Consolas, monospace" font-size="13">A download tool and an interpreter appear in the same pipeline.</text>
+  <text x="40" y="260" fill="#e0af68" font-family="Consolas, monospace" font-size="14">[caution] CC-NETWORK-ACTIVITY-DOWNLOAD: Download tool invoked</text>
+  <text x="60" y="285" fill="#9aa4b2" font-family="Consolas, monospace" font-size="13">Download tool(s) invoked: curl. Data may be retrieved from a remote source.</text>
+  <text x="40" y="330" fill="#9ece6a" font-family="Segoe UI, sans-serif" font-size="14">Safer alternative: Download, inspect, verify, then execute.</text>
+  <text x="40" y="370" fill="#9aa4b2" font-family="Segoe UI, sans-serif" font-size="12">Input was not executed. Static analysis cannot guarantee safety.</text>
+</svg>
