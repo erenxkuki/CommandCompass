@@ -93,6 +93,14 @@ commandcompass serve
 - Submit pull requests.
 - Share the tool with other developers.
 
+## Shell completion
+
+Typer provides completion support:
+
+```bash
+commandcompass --install-completion
+```
+
 ## Development
 
 ```bash
@@ -101,6 +109,10 @@ pytest
 ruff check .
 ruff format --check .
 ```
+
+## Community
+
+See `CODE_OF_CONDUCT.md` and `CONTRIBUTING.md`.
 
 ## Documentation
 
