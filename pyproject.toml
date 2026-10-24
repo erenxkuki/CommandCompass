@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "commandcompass"
+version = "0.1.0"
+description = "Local-first command inspection and security analysis tool."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "RealRyzu" }]
+keywords = ["security", "cli", "command", "parser", "developer-tools"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Security",
+]
+dependencies = [
+  "typer>=0.12",
+  "pydantic>=2.0",
+  "fastapi>=0.110",
+  "uvicorn>=0.27",
+  "jinja2>=3.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/erenxkuki/CommandCompass"
+Repository = "https://github.com/erenxkuki/CommandCompass"
+Issues = "https://github.com/erenxkuki/CommandCompass/issues"
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+[project.scripts]
+commandcompass = "commandcompass.cli.main:app"
+
+[tool.setuptools]
+packages = ["commandcompass", "commandcompass.core", "commandcompass.parsers", "commandcompass.rules", "commandcompass.redaction", "commandcompass.reporting", "commandcompass.cli", "commandcompass.ui"]
+
+[tool.setuptools.package-data]
+commandcompass = ["ui/templates/*.html", "py.typed"]
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+ignore = ["B008", "BLE001"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
