@@ -10,6 +10,8 @@ import typer
 
 from commandcompass import __version__
 from commandcompass.core.analysis import analyze as run_analysis
+from commandcompass.core.config import get as get_config
+from commandcompass.core.config import load_config, save_config
 from commandcompass.core.models import AnalysisRequest, ShellType
 from commandcompass.reporting import to_json, to_markdown_report
 from commandcompass.rules import default_rules, rule_by_id
@@ -28,6 +30,8 @@ def _blue_link(text: str, url: str) -> str:
 
 def _latest_remote_version(force: bool = False) -> str | None:
     if os.environ.get("COMMANDCOMPASS_NO_UPDATE_CHECK"):
+        return None
+    if get_config("update_check", True) is False:
         return None
     if not force and not sys.stdout.isatty():
         return None
@@ -225,6 +229,22 @@ def examples():
         "python -m pip install requests",
     ]:
         typer.echo(cmd)
+
+
+@app.command()
+def config_show():
+    """Show local configuration."""
+    typer.echo(load_config())
+
+
+@app.command()
+def config_init():
+    """Create a default configuration file."""
+    if get_config("update_check", None) is None:
+        save_config({"update_check": True, "default_shell": "auto"})
+    typer.echo(
+        f"Configuration written to {__import__('commandcompass.core.config', fromlist=['CONFIG_PATH']).CONFIG_PATH}"
+    )
 
 
 @app.command()

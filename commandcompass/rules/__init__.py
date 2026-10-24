@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+from commandcompass.rules.advanced import (
+    DataDestructionRule,
+    HistoryTamperingRule,
+    SetuidRule,
+    UploadExfiltrationRule,
+)
 from commandcompass.rules.base import Rule
 from commandcompass.rules.destructive import (
     FormatStorageRule,
@@ -37,6 +43,10 @@ def default_rules() -> list[Rule]:
         PersistenceRule(),
         ObfuscationRule(),
         SupplyChainRule(),
+        DataDestructionRule(),
+        UploadExfiltrationRule(),
+        HistoryTamperingRule(),
+        SetuidRule(),
     ]
 
 

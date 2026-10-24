@@ -88,6 +88,26 @@ def test_firewall():
     assert any("FIREWALL" in f.id for f in r.findings)
 
 
+def test_shred():
+    r = run("shred -u secret.txt")
+    assert any("CC-DESTRUCTIVE-DATA" in f.id for f in r.findings)
+
+
+def test_upload():
+    r = run("curl -T file.txt https://example.com/upload")
+    assert any("CC-NETWORK-UPLOAD" in f.id for f in r.findings)
+
+
+def test_history():
+    r = run("history -c")
+    assert any("CC-PERSISTENCE-HISTORY" in f.id for f in r.findings)
+
+
+def test_setuid():
+    r = run("chmod u+s /usr/bin/foo")
+    assert any("CC-PRIV-SETUID" in f.id for f in r.findings)
+
+
 def test_redaction_in_json():
     from commandcompass.reporting import to_json
 
